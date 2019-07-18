@@ -114,7 +114,3 @@ def grade_point_average(username, password):
     return semester_list
 
 
-if __name__ == '__main__':
-    # get_score('152210702119', '935377012pxc')
-    # grade_point_average('182210711113', 'glhsjhy20010117')
-    grade_point_average('182210711114', 'hanzy2000')
