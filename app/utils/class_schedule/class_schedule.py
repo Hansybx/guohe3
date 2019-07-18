@@ -92,7 +92,4 @@ def class_in_tr(tr):
     return class_list
 
 
-if __name__ == "__main__":
-    # a = login('182210711114', 'hanzy2000')
-    # print(a)
-    b = get_class_schedule_week('152210702119', '935377012pxc', '2019-2020-1', 1)
+
