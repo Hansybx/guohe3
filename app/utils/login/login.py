@@ -34,5 +34,4 @@ def login(username, password):
     return session
 
 
-if __name__ == "__main__":
-    a = login('182210711114', 'hanzy2000')
+
