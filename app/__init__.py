@@ -17,9 +17,17 @@ def create_app():
     app.config.from_object('app.settings')
     app.config.from_object('app.secure')
 
-    # register_blueprint(app)
+    register_blueprint(app)
     init_db(app)
     return app
+
+
+def register_blueprint(app):
+    from app.api.v1 import v1
+    from app.api.v1.stu import stu
+
+    app.register_blueprint(v1, url_prefix='/api/v1')
+    app.register_blueprint(stu, url_prefix='/api/v1/stu')
 
 
 def init_db(app):

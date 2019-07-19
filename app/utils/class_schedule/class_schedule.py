@@ -9,7 +9,7 @@ import re
 
 from bs4 import BeautifulSoup
 
-from app.utils.login.login import login
+from app.utils.login.login_util import login
 
 
 def get_class_schedule(username, password, semester):
@@ -30,12 +30,11 @@ def get_class_schedule_week(username, password, semester, zc):
         print(1)
     response.encoding = 'utf-8'
 
-
     soup = BeautifulSoup(response.text, "html.parser")
 
     # tr存储每一行的课程
     trs = soup.html.select('#kbtable tr .kbcontent')
-    if not trs :
+    if not trs:
         a = 1
         # 未评价
     for tr in trs:
@@ -90,6 +89,3 @@ def class_in_tr(tr):
             class_list['class_address'] = class_info[8].text
 
     return class_list
-
-
-

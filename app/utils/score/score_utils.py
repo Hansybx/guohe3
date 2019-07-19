@@ -9,7 +9,8 @@ import re
 
 from bs4 import BeautifulSoup
 
-from app.utils.login.login import login
+from app.models.error import AuthFailed
+from app.utils.login.login_util import login
 
 
 # 成绩获取
@@ -25,7 +26,7 @@ def get_score(username, password):
     a = trs[4].contents[1].contents[0]
     if a == '正在拼命加载中，请稍后...':
         # 未评价
-        pass
+        raise AuthFailed
     score_list = []
     for tr in trs:
         score_list.append(get_tr_in_trs(tr))
@@ -114,3 +115,5 @@ def grade_point_average(username, password):
     return semester_list
 
 
+if __name__ == '__main__':
+    get_score('152210702119','935377012pxc')
