@@ -7,7 +7,7 @@ Author  : Hansybx
 """
 from bs4 import BeautifulSoup
 
-from app.utils.login.login import login
+from app.utils.login.login_util import login
 
 """
 jzwid
