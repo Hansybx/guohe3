@@ -9,14 +9,11 @@ import re
 
 from bs4 import BeautifulSoup
 
+from app.models.error import AuthFailed, PasswordFailed
 from app.utils.login.login_util import login
 
 
-def get_class_schedule(username, password, semester):
-    pass
-
-
-# 当前周次的课表
+# 当前周次的课表, 学期 周次
 def get_class_schedule_week(username, password, semester, zc):
     reg = r'<font color="red">请先登录系统</font>'
     session = login(username, password)
@@ -27,7 +24,7 @@ def get_class_schedule_week(username, password, semester, zc):
     response = session.get(url, params=paramrs)
 
     if re.findall(reg, response.text):
-        print(1)
+        raise PasswordFailed
     response.encoding = 'utf-8'
 
     soup = BeautifulSoup(response.text, "html.parser")
@@ -35,8 +32,9 @@ def get_class_schedule_week(username, password, semester, zc):
     # tr存储每一行的课程
     trs = soup.html.select('#kbtable tr .kbcontent')
     if not trs:
-        a = 1
+
         # 未评价
+        raise AuthFailed
     for tr in trs:
         data_list.append(class_in_tr(tr))
 

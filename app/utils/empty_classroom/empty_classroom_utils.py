@@ -5,8 +5,11 @@ Time    : 2019/7/18 17:14
 Author  : Hansybx
 
 """
+import re
+
 from bs4 import BeautifulSoup
 
+from app.models.error import PasswordFailed
 from app.utils.login.login_util import login
 
 """
@@ -44,7 +47,7 @@ def empty_classroom(username, password, semester, area_id, building_id, week):
     room_list = []
 
     url = "http://jwgl.just.edu.cn:8080/jsxsd/kbcx/kbxx_classroom_ifr"
-
+    week = int(week)
     paramrs = {'xnxqh': semester,
                'skyx': '',
                'xqid': area_id,
@@ -55,6 +58,10 @@ def empty_classroom(username, password, semester, area_id, building_id, week):
                'jc2': ''}
 
     response = session.get(url, params=paramrs)
+
+    reg = r'<font color="red">请先登录系统</font>'
+    if re.findall(reg, response.text):
+        raise PasswordFailed
 
     soup = BeautifulSoup(response.text, "html.parser")
     trs = soup.select('table tr')

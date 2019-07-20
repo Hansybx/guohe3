@@ -9,17 +9,19 @@ import re
 
 from bs4 import BeautifulSoup
 
-from app.models.error import AuthFailed
+from app.models.error import AuthFailed, PasswordFailed
 from app.utils.login.login_util import login
 
 
 # 成绩获取
 def get_score(username, password):
+    score_list = []
+
     reg = r'<font color="red">请先登录系统</font>'
     session = login(username, password)
     response = session.get('http://jwgl.just.edu.cn:8080/jsxsd/kscj/cjcx_list')
     if re.findall(reg, response.text):
-        pass
+        raise PasswordFailed
     soup = BeautifulSoup(response.text, "html.parser")
     trs = soup.select('table tr')[2:]
 
@@ -27,7 +29,7 @@ def get_score(username, password):
     if a == '正在拼命加载中，请稍后...':
         # 未评价
         raise AuthFailed
-    score_list = []
+
     for tr in trs:
         score_list.append(get_tr_in_trs(tr))
     return score_list

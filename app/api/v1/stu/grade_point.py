@@ -8,7 +8,7 @@ Author  : Hansybx
 from flask import request, jsonify
 
 from app.api.v1.stu import stu
-from app.models.error import AuthFailed
+from app.models.error import AuthFailed, PasswordFailed
 from app.models.res import Res
 from app.utils.score.score_utils import get_score, grade_point_average
 
@@ -32,6 +32,15 @@ def score_get():
         info = [
             {
                 'result': '未评教'
+            }
+        ]
+
+    except PasswordFailed:
+        status = 401
+        msg = '查询失败'
+        info = [
+            {
+                'result': '账号或密码错误'
             }
         ]
 
@@ -59,6 +68,15 @@ def grade_point_get():
         info = [
             {
                 'result': '未评教'
+            }
+        ]
+
+    except PasswordFailed:
+        status = 401
+        msg = '查询失败'
+        info = [
+            {
+                'result': '账号或密码错误'
             }
         ]
 

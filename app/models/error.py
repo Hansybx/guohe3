@@ -49,3 +49,9 @@ class AuthFailed(APIException):
     code = 401
     error_code = 1005
     msg = '未评教'
+
+
+class PasswordFailed(APIException):
+    code = 401
+    error_code = 1006
+    msg = '账号或密码错误'
