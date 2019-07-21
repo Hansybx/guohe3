@@ -8,6 +8,7 @@ Author  : Hansybx
 from flask import request, jsonify
 
 from app.api.v1 import stu
+from app.models.error import PasswordFailed
 from app.models.res import Res
 from app.utils.sports.sports_utils import morning_attend, club_attend
 
@@ -25,6 +26,16 @@ def morning_attend_get():
                 'result': result
             }
         ]
+
+    except PasswordFailed:
+        status = 401
+        msg = '查询失败'
+        info = [
+            {
+                'result': '账号或密码错误'
+            }
+        ]
+
     except Exception:
         status = 500
         msg = '查询失败'
@@ -38,7 +49,7 @@ def morning_attend_get():
     return jsonify(res_json.__dict__)
 
 
-@stu.route('/club/attend',methods=['POST'])
+@stu.route('/club/attend', methods=['POST'])
 def club_attend_get():
     username = request.form['username']
     password = request.form['password']
@@ -51,6 +62,16 @@ def club_attend_get():
                 'result': result
             }
         ]
+
+    except PasswordFailed:
+        status = 401
+        msg = '查询失败'
+        info = [
+            {
+                'result': '账号或密码错误'
+            }
+        ]
+
     except Exception:
         status = 500
         msg = '查询失败'
