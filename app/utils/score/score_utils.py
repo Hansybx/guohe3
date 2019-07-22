@@ -10,6 +10,9 @@ import re
 from bs4 import BeautifulSoup
 
 from app.models.error import AuthFailed, PasswordFailed
+from app.models.grade_point import GradePoint
+from app.utils.common_utils import put_to_mysql
+
 from app.utils.login.login_util import login
 
 
@@ -79,6 +82,15 @@ def grade_to_num(score):
         return 0
 
 
+# 列表补全
+def check_exist(list):
+    while True:
+        if len(list) < 8:
+            list.append('')
+        else:
+            return list
+
+
 # 绩点课程筛选
 def grade_point_average(username, password):
     grade_point = 0
@@ -109,13 +121,25 @@ def grade_point_average(username, password):
 
     temp_grade = 0
     temp_semester = 0
+    value_list = []
     # 平均学分绩点
+    i = 0
     for key, value in semester_list.items():
+        i += 1
         temp_grade += value
         temp_semester += 1
+        value_list.append(value)
+    value_list = check_exist(value_list)
     semester_list['all'] = round((temp_grade / temp_semester), 2)
+    grade_point_temp = GradePoint(uid=username, average=semester_list['all'],
+                                  semester1=value_list[0], semester2=value_list[1],
+                                  semester3=value_list[2], semester4=value_list[3],
+                                  semester5=value_list[4], semester6=value_list[5],
+                                  semester7=value_list[6], semester8=value_list[7])
+    put_to_mysql(grade_point_temp)
     return semester_list
 
 
+
 if __name__ == '__main__':
-    get_score('152210702119','935377012pxc')
+    grade_point_average('182210711114', 'hanzy2000')
