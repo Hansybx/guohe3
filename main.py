@@ -7,14 +7,21 @@ Author  : Hansybx
 """
 
 from app import create_app
+import logging
 
 app = create_app()
 
 
 @app.route('/')
-def index():
-    return 'Hello World'
+def hello():
+    return 'hello,flask'
 
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=app.config['DEBUG'])
+
+
+if __name__ != '__main__':
+    gunicorn_logger = logging.getLogger('gunicorn.error')
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)

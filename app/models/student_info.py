@@ -14,7 +14,7 @@ from app.utils.common_utils import md5, get_date_now
 class StudentInfo(db.Model):
     __tablename__ = 'StudentInfo'
     # 学号
-    uid = Column(Integer, primary_key=True)
+    uid = Column(String(32), primary_key=True)
     # 密码
     password = Column(String(100), nullable=False)
     # 姓名

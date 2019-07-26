@@ -7,13 +7,13 @@ Author  : Hansybx
 """
 from flask import request, jsonify
 
-from app.api.v1 import stu
+from app.api.v1.stu import stu
 from app.models.error import PasswordFailed
 from app.models.res import Res
 from app.utils.sports.sports_utils import morning_attend, club_attend
 
 
-@stu.route('/morning/attend')
+@stu.route('/morning/attend', methods=['POST'])
 def morning_attend_get():
     username = request.form['username']
     password = request.form['password']
