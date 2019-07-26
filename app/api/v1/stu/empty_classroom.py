@@ -13,7 +13,7 @@ from app.models.res import Res
 from app.utils.empty_classroom.empty_classroom_utils import empty_classroom
 
 
-@stu.route('/empty/classroom')
+@stu.route('/empty/classroom',methods=['POST'])
 def empty_classroom_get():
     username = request.form['username']
     password = request.form['password']
