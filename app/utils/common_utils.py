@@ -52,6 +52,12 @@ def put_to_mysql(key):
     db.session.commit()
 
 
+# 数据批量保存
+def sql_to_execute(sql, value):
+    db.session.execute(sql, value)
+    db.session.commit()
+
+
 if __name__ == '__main__':
     # 待加密信息
     a = 'this is a md5 test.'

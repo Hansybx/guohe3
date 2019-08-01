@@ -10,4 +10,4 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-#from app.model import feedback, log, user, face
+# from app.models import grade_point, student_info, teacher_class

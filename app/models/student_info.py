@@ -12,7 +12,7 @@ from app.utils.common_utils import md5, get_date_now
 
 
 class StudentInfo(db.Model):
-    __tablename__ = 'StudentInfo'
+    __tablename__ = 'student_info'
     # 学号
     uid = Column(String(32), primary_key=True)
     # 密码

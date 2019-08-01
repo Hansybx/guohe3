@@ -5,6 +5,7 @@ Time    : 2019/7/20 15:02
 Author  : Hansybx
 
 """
+import re
 
 import requests
 from bs4 import BeautifulSoup
@@ -108,4 +109,5 @@ def club_attend(username, password):
 
 if __name__ == '__main__':
     # morning_attend('182210101312', 'GY')
-    club_attend('172211802117', 'ZQQ')
+    # club_attend('172211802117', 'ZQQ')
+    club_attend('17221117', 'ZQQ')

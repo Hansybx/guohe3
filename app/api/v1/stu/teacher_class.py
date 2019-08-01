@@ -1,7 +1,7 @@
 """
 
  -*- coding: utf-8 -*-
-Time    : 2019/7/23 20:39
+Time    : 2019/7/27 16:15
 Author  : Hansybx
 
 """
@@ -10,15 +10,19 @@ from flask import request, jsonify
 from app.api.v1.stu import stu
 from app.models.error import PasswordFailed
 from app.models.res import Res
-from app.utils.login.login_util import student_info
+from app.utils.teacher_class.teacher_class_utils import get_teacher_class
 
 
-@stu.route('/info', methods=['POST'])
-def student_info_get():
+@stu.route('/class/teacher', methods=['POST'])
+def teacher_class_get():
     username = request.form['username']
     password = request.form['password']
+    semester = request.form['semester']
+    academy = request.form['academy']
+    zc = request.form['zc']
+
     try:
-        result = student_info(username, password)
+        result = get_teacher_class(username, password, semester, academy, zc)
         status = 200
         msg = '查询成功'
         info = {
@@ -35,9 +39,11 @@ def student_info_get():
     except Exception:
         status = 500
         msg = '查询失败'
-        info = {
-            'result': '未知异常'
-        }
+        info = [
+            {
+                'result': '未知异常'
+            }
+        ]
 
     res_json = Res(status, msg, info)
     return jsonify(res_json.__dict__)

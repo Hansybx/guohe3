@@ -8,18 +8,18 @@ Author  : Hansybx
 import re
 
 from bs4 import BeautifulSoup
+from flask import jsonify
 
 from app.models.error import AuthFailed, PasswordFailed
 from app.models.grade_point import GradePoint
-from app.utils.common_utils import put_to_mysql
+from app.models.score import Score
+from app.utils.common_utils import put_to_mysql, sql_to_execute
 
 from app.utils.login.login_util import login
 
 
 # 成绩获取
 def get_score(username, password):
-    score_list = []
-
     reg = r'<font color="red">请先登录系统</font>'
     session = login(username, password)
     response = session.get('http://jwgl.just.edu.cn:8080/jsxsd/kscj/cjcx_list')
@@ -33,26 +33,46 @@ def get_score(username, password):
         # 未评价
         raise AuthFailed
 
-    for tr in trs:
-        score_list.append(get_tr_in_trs(tr))
-    return score_list
+    score_list = query_in_sql(username)
+    if score_list:
+        return score_list.json['data']
+    else:
+        score_list = []
+        for tr in trs:
+            score_list.append(get_tr_in_trs(tr, username))
+
+        sql = "insert into score(uid, semester, class_name, grade," \
+              "grade_point, class_test_type, class_type)" \
+              "values (:uid, :semester, :class_name, :grade," \
+              ":grade_point, :class_test_type, :class_type)"
+        sql_to_execute(sql, score_list)
+        return score_list
 
 
-def get_tr_in_trs(tr):
-    score_info = {'class_semester': '',
+def query_in_sql(username):
+    data = Score.query.filter(Score.uid == username).all()
+    if data:
+        return jsonify(data=[i.serialize() for i in data])
+    else:
+        return None
+
+
+def get_tr_in_trs(tr, username):
+    score_info = {'uid': username,
+                  'semester': '',
                   'class_name': '',
-                  'class_score': '',
+                  'grade': '',
                   'class_point': '',
                   'class_test_type': '',
                   'class_type': ''}
     # 学期
-    score_info['class_semester'] = tr.contents[3].text
+    score_info['semester'] = tr.contents[3].text
     # 课程名
     score_info['class_name'] = tr.contents[7].text
     # 课程得分
-    score_info['class_score'] = tr.contents[9].text
+    score_info['grade'] = tr.contents[9].text
     # 学分
-    score_info['class_point'] = tr.contents[11].text
+    score_info['grade_point'] = tr.contents[11].text
     # 考试类型
     score_info['class_test_type'] = tr.contents[15].text
     # 课程类型
@@ -83,12 +103,12 @@ def grade_to_num(score):
 
 
 # 列表补全
-def check_exist(list):
+def check_exist(temp):
     while True:
-        if len(list) < 8:
-            list.append('')
+        if len(temp) < 8:
+            temp.append(-1.0)
         else:
-            return list
+            return temp
 
 
 # 绩点课程筛选
@@ -99,7 +119,7 @@ def grade_point_average(username, password):
     filter_flag = ''
 
     score_list = get_score(username, password)
-    semester_flag = score_list[0]['class_semester']
+    semester_flag = score_list[0]['semester']
     for score in score_list:
         # 重修补考成绩在前，筛选
         if score['class_name'] == filter_flag:
@@ -107,15 +127,15 @@ def grade_point_average(username, password):
         filter_flag = score['class_name']
 
         # 当前学期绩点判断
-        if semester_flag != score['class_semester']:
+        if semester_flag != score['semester']:
             semester_list[semester_flag] = round((grade / grade_point), 2)
-            semester_flag = score['class_semester']
+            semester_flag = score['semester']
             grade_point = 0
             grade = 0
 
         if score['class_name'].count('体育') < 1 and score['class_type'].count('任选') < 1:
-            grade_point += float(score['class_point'])
-            grade += grade_to_num(score['class_score']) * float(score['class_point'])
+            grade_point += float(score['grade_point'])
+            grade += grade_to_num(score['grade']) * float(score['grade_point'])
 
     semester_list[semester_flag] = round((grade / grade_point), 2)
 
@@ -138,7 +158,6 @@ def grade_point_average(username, password):
                                   semester7=value_list[6], semester8=value_list[7])
     put_to_mysql(grade_point_temp)
     return semester_list
-
 
 
 if __name__ == '__main__':

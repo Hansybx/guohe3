@@ -13,7 +13,7 @@ from app.models.res import Res
 from app.utils.empty_classroom.empty_classroom_utils import empty_classroom
 
 
-@stu.route('/empty/classroom',methods=['POST'])
+@stu.route('/classroom/empty', methods=['POST'])
 def empty_classroom_get():
     username = request.form['username']
     password = request.form['password']
@@ -26,19 +26,23 @@ def empty_classroom_get():
         result = empty_classroom(username, password, semester, area_id, building_id, week)
         status = 200
         msg = '查询成功'
-        info = [
-            {
-                'result': result
-            }
-        ]
+        info = {
+            'result': result
+        }
+
     except PasswordFailed:
         status = 401
         msg = '查询失败'
-        info = [
-            {
-                'result': '账号或密码错误'
-            }
-        ]
+        info = {
+            'result': '账号或密码错误'
+        }
+
+    except Exception:
+        status = 500
+        msg = '查询失败'
+        info = {
+            'result': '未知异常'
+        }
 
     res_json = Res(status, msg, info)
     return jsonify(res_json.__dict__)

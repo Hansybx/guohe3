@@ -13,13 +13,8 @@ from flask import jsonify
 from app.models import db
 from app.models.class_schedule import ClassSchedule
 from app.models.error import AuthFailed, PasswordFailed
+from app.utils.common_utils import sql_to_execute
 from app.utils.login.login_util import login
-
-
-# 数据批量保存
-def sql_to_execute(sql, value):
-    db.session.execute(sql, value)
-    db.session.commit()
 
 
 # 课程是否在数据库中
@@ -131,7 +126,7 @@ def class_in_tr(tr, zc, i, username, semester):
         'class_teacher': '',
         'class_week': '',
         'class_address': '',
-        'status': False,
+        'status': 0,
         'week_time': zc,
         'class_order': (i - 1) // 7 + 1 if i % 7 != 0 else i // 7,
         'weekday': i % 7 if i % 7 != 0 else 7

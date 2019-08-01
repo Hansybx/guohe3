@@ -25,29 +25,72 @@ def get_class_schedule():
 
         status = 200
         msg = '查询成功'
-        info = [
-            {
-                'result': result
-            }
-        ]
+        info = {
+            'result': result
+        }
 
     except AuthFailed:
         status = 401
         msg = '查询失败'
-        info = [
-            {
-                'result': '未评教'
-            }
-        ]
+        info = {
+            'result': '未评教'
+        }
 
     except PasswordFailed:
         status = 401
         msg = '查询失败'
-        info = [
-            {
-                'result': '账号或密码错误'
-            }
-        ]
+        info = {
+            'result': '账号或密码错误'
+        }
+
+    except Exception:
+        status = 500
+        msg = '查询失败'
+        info = {
+            'result': '未知异常'
+        }
+
+    res_json = Res(status, msg, info)
+
+    return jsonify(res_json.__dict__)
+
+
+@stu.route('/class/schedule/update', methods=['POST'])
+def get_class_schedule_update():
+    username = request.form['username']
+    password = request.form['password']
+    semester = request.form['semester']
+    result = {}
+    try:
+        for zc in range(1, 21):
+            result[semester + '_' + str(zc)] = get_class_schedule_week(username, password, semester, zc)
+
+        status = 200
+        msg = '查询成功'
+        info = {
+            'result': result
+        }
+
+    except AuthFailed:
+        status = 401
+        msg = '查询失败'
+        info = {
+            'result': '未评教'
+        }
+
+    except PasswordFailed:
+        status = 401
+        msg = '查询失败'
+        info = {
+            'result': '账号或密码错误'
+        }
+
+    except Exception:
+        status = 500
+        msg = '查询失败'
+        info = {
+            'result': '未知异常'
+        }
 
     res_json = Res(status, msg, info)
 
