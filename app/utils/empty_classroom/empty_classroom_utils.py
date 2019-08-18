@@ -80,7 +80,8 @@ def empty_classroom(username, password, semester, area_id, building_id, week):
                   "values (:classroom, :class_order, :weekday, :status," \
                   ":week_time, :semester, :area,:building_id)"
             sql_to_execute(sql, room_list)
-        return room_list
+        data_list = query_empty_classroom(semester, area_id, building_id, week)
+        return data_list.json['data']
 
 
 def tr_in_trs(trs, semester, area_id, building_id, week):

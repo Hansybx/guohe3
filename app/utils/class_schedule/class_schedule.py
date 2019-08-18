@@ -35,11 +35,15 @@ def class_in_sql_update(username, zc, semester):
 
 
 # 对应星期筛查
-def weekday_query_mysql(username, zc, semester, weekday):
+def order_query_mysql(username, zc, semester, class_order):
     data = ClassSchedule.query.filter(ClassSchedule.uid == username, ClassSchedule.week_time == zc,
-                                      ClassSchedule.semester == semester,
-                                      ClassSchedule.weekday == weekday).order_by(ClassSchedule.class_order).all()
-    return jsonify(data=[i.serialize() for i in data])
+                                      ClassSchedule.semester == semester, ClassSchedule.status == 0,
+                                      ClassSchedule.class_order == class_order).all()
+    order_dic = {}
+    res = jsonify(data=[i.serialize() for i in data]).json['data']
+    for temp in res:
+        order_dic.update(temp)
+    return order_dic
 
 
 # 课表爬取
@@ -64,36 +68,37 @@ def update_class_schedule(username, password, semester, zc):
         raise AuthFailed
 
     i = 0
-    sql = "insert into class_schedule(uid, week_time, class_week, class_address, semester," \
-          "class_order, weekday, class_name, class_num,class_teacher,status)" \
-          "values (:uid, :week_time, :class_week, :class_address, :semester," \
-          ":class_order, :weekday, :class_name, :class_num,:class_teacher,:status)"
+    # sql = "insert into class_schedule(uid, week_time, class_week, class_address, semester," \
+    #       "class_order, weekday, class_name, class_num,class_teacher,status)" \
+    #       "values (:uid, :week_time, :class_week, :class_address, :semester," \
+    #       ":class_order, :weekday, :class_name, :class_num,:class_teacher,:status)"
+
+    sql = "insert into class_schedule(uid, week_time, semester," \
+          "class_order, weekday,status,news)" \
+          "values (:uid, :week_time, :semester," \
+          ":class_order, :weekday,:status,:news)"
+
     value = []
     for tr in trs:
         i += 1
-        value.append(class_in_tr(tr, zc, i, username, semester))
+        # value.append(class_in_tr(tr, zc, i, username, semester))
 
-    sql_to_execute(sql, value)
+        temp = class_in_tr(tr, zc, i, username, semester)
+        if temp:
+            value.append(temp)
+    if value:
+        sql_to_execute(sql, value)
 
 
 # 星期几的课
 def class_in_weekday(username, zc, semester):
-    monday = weekday_query_mysql(username, zc, semester, 1).json['data']
-    tuesday = weekday_query_mysql(username, zc, semester, 2).json['data']
-    wednesday = weekday_query_mysql(username, zc, semester, 3).json['data']
-    thursday = weekday_query_mysql(username, zc, semester, 4).json['data']
-    friday = weekday_query_mysql(username, zc, semester, 5).json['data']
-    saturday = weekday_query_mysql(username, zc, semester, 6).json['data']
-    sunday = weekday_query_mysql(username, zc, semester, 7).json['data']
+    week_list_class = []
+    temp = {}
+    for i in range(1, 6):
+        week_list_class.append(order_query_mysql(username, zc, semester, i))
 
-    week_list = {'monday': monday,
-                 'tuesday': tuesday,
-                 'wednesday': wednesday,
-                 'thursday': thursday,
-                 'friday': friday,
-                 'saturday': saturday,
-                 'sunday': sunday}
-    return week_list
+    if week_list_class:
+        return week_list_class
 
 
 # 当前周次的课表, 学期 周次 单周
@@ -117,36 +122,44 @@ def get_class_schedule_week_update(username, password, semester, zc):
 
 
 def class_in_tr(tr, zc, i, username, semester):
+
     class_list = {
         'uid': username,
         'week_time': zc,
         'semester': semester,
-        'class_num': '',
-        'class_name': '',
-        'class_teacher': '',
-        'class_week': '',
-        'class_address': '',
+        # 'class_num': '',
+        # 'class_name': '',
+        # 'class_teacher': '',
+        # 'class_week': '',
+        # 'class_address': '',
         'status': 0,
-        'week_time': zc,
+        'news': '',
         'class_order': (i - 1) // 7 + 1 if i % 7 != 0 else i // 7,
         'weekday': i % 7 if i % 7 != 0 else 7
     }
     if len(tr.text) > 1:
         class_info = tr.contents
         # 课程号
-        class_list['class_num'] = class_info[0]
+        # class_list['class_num'] = class_info[0]
+        class_num = class_info[0]
         # 课程名
-        class_list['class_name'] = class_info[2]
+        # class_list['class_name'] = class_info[2]
+        class_name = class_info[2]
         # 授课教师
-        class_list['class_teacher'] = class_info[4].text
+        # class_list['class_teacher'] = class_info[4].text
+        class_teacher = class_info[4].text
         # 上课周次
-        class_list['class_week'] = class_info[6].text
-
+        # class_list['class_week'] = class_info[6].text
+        class_week = class_info[6].text
+        class_address = ''
         if len(class_info) > 8:
             # 对应教室
-            class_list['class_address'] = class_info[8].text
+            # class_list['class_address'] = class_info[8].text
+            class_address = class_info[8].text
+        class_list['news'] = class_num + '@' + class_name + '@' + class_teacher + '@' + class_week + '@' + class_address
 
-    return class_list
+        return class_list
+
     # class_list = {
     # 'class_num': class_num,
     # 'class_name': class_name,

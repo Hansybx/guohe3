@@ -9,6 +9,7 @@ verify_ssl = true
 flasksqlalchemy = "*"
 flask-sqlalchemy = "*"
 request = "*"
+selenium = "*"
 
 [requires]
 python_version = "3.7"

@@ -19,34 +19,32 @@ def score_get():
     password = request.form['password']
     try:
         result = get_score(username, password)
-        status = 200
+        code = 200
         msg = '查询成功'
-        info = {
-            'result': result
-        }
+        info = result
 
     except AuthFailed:
-        status = 401
+        code = 401
         msg = '查询失败'
         info = {
             'result': '未评教'
         }
 
     except PasswordFailed:
-        status = 401
+        code = 401
         msg = '查询失败'
         info = {
             'result': '账号或密码错误'
         }
 
     except Exception:
-        status = 500
+        code = 500
         msg = '查询失败'
         info = {
             'result': '未知异常'
         }
 
-    res_json = Res(status, msg, info)
+    res_json = Res(code, msg, info)
     return jsonify(res_json.__dict__)
 
 
@@ -57,32 +55,30 @@ def grade_point_get():
 
     try:
         result = grade_point_average(username, password)
-        status = 200
+        code = 200
         msg = '查询成功'
-        info = {
-            'result': result
-        }
+        info = result
 
     except AuthFailed:
-        status = 401
+        code = 401
         msg = '查询失败'
         info = {
             'result': '未评教'
         }
 
     except PasswordFailed:
-        status = 401
+        code = 401
         msg = '查询失败'
         info = {
             'result': '账号或密码错误'
         }
 
-    except Exception:
-        status = 500
-        msg = '查询失败'
-        info = {
-            'result': '未知异常'
-        }
+    # except Exception:
+    #     code = 500
+    #     msg = '查询失败'
+    #     info = {
+    #         'result': '未知异常'
+    #     }
 
-    res_json = Res(status, msg, info)
+    res_json = Res(code, msg, info)
     return jsonify(res_json.__dict__)

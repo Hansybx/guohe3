@@ -8,11 +8,11 @@ Author  : Hansybx
 
 
 class Res:
-    status = 200
+    code = 200
     msg = ''
     info = {}
 
-    def __init__(self, status, msg, info):
-        self.status = status
+    def __init__(self, code, msg, info):
+        self.code = code
         self.msg = msg
         self.info = info

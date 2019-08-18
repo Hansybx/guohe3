@@ -43,7 +43,7 @@ class ClassroomEmpty(db.Model):
 
     def serialize(self):
         return {
-            'class_order': self.class_order,
+            'time': self.class_order,
             'weekday': self.weekday,
-            'class_address': self.class_address
+            'place': self.class_address
         }

@@ -10,6 +10,7 @@ import re
 from bs4 import BeautifulSoup
 from flask import jsonify
 
+from app import db
 from app.models.error import AuthFailed, PasswordFailed
 from app.models.grade_point import GradePoint
 from app.models.score import Score
@@ -41,10 +42,12 @@ def get_score(username, password):
         for tr in trs:
             score_list.append(get_tr_in_trs(tr, username))
 
-        sql = "insert into score(uid, semester, class_name, grade," \
-              "grade_point, class_test_type, class_type)" \
-              "values (:uid, :semester, :class_name, :grade," \
-              ":grade_point, :class_test_type, :class_type)"
+        sql = "insert into score(uid, start_semester, course_name, score,credit," \
+              " examination_method, course_attribute,alternative_course_number," \
+              " alternative_course_name, mark_of_score)" \
+              "values (:uid, :start_semester, :course_name, :score,:credit," \
+              " :examination_method, :course_attribute,:alternative_course_number," \
+              " :alternative_course_name, :mark_of_score)"
         sql_to_execute(sql, score_list)
         return score_list
 
@@ -59,25 +62,30 @@ def query_in_sql(username):
 
 def get_tr_in_trs(tr, username):
     score_info = {'uid': username,
-                  'semester': '',
-                  'class_name': '',
-                  'grade': '',
-                  'class_point': '',
-                  'class_test_type': '',
-                  'class_type': ''}
+                  'start_semester': '',
+                  'course_name': '',
+                  'score': '',
+                  'credit': '',
+                  'examination_method': '',
+                  'course_attribute': '',
+                  'alternative_course_number': '',
+                  'alternative_course_name': '',
+                  'mark_of_score': ''}
     # 学期
-    score_info['semester'] = tr.contents[3].text
+    score_info['start_semester'] = tr.contents[3].text
     # 课程名
-    score_info['class_name'] = tr.contents[7].text
+    score_info['course_name'] = tr.contents[7].text
     # 课程得分
-    score_info['grade'] = tr.contents[9].text
+    score_info['score'] = tr.contents[9].text
     # 学分
-    score_info['grade_point'] = tr.contents[11].text
+    score_info['credit'] = tr.contents[11].text
     # 考试类型
-    score_info['class_test_type'] = tr.contents[15].text
+    score_info['examination_method'] = tr.contents[15].text
     # 课程类型
-    score_info['class_type'] = tr.contents[17].text
-
+    score_info['course_attribute'] = tr.contents[17].text
+    score_info['alternative_course_number'] = tr.contents[21].text
+    score_info['alternative_course_name'] = tr.contents[23].text
+    score_info['mark_of_score'] = tr.contents[25].text
     return score_info
 
 
@@ -119,23 +127,23 @@ def grade_point_average(username, password):
     filter_flag = ''
 
     score_list = get_score(username, password)
-    semester_flag = score_list[0]['semester']
+    semester_flag = score_list[0]['start_semester']
     for score in score_list:
         # 重修补考成绩在前，筛选
-        if score['class_name'] == filter_flag:
+        if score['course_name'] == filter_flag:
             continue
-        filter_flag = score['class_name']
+        filter_flag = score['course_name']
 
         # 当前学期绩点判断
-        if semester_flag != score['semester']:
+        if semester_flag != score['start_semester']:
             semester_list[semester_flag] = round((grade / grade_point), 2)
-            semester_flag = score['semester']
+            semester_flag = score['start_semester']
             grade_point = 0
             grade = 0
 
-        if score['class_name'].count('体育') < 1 and score['class_type'].count('任选') < 1:
-            grade_point += float(score['grade_point'])
-            grade += grade_to_num(score['grade']) * float(score['grade_point'])
+        if score['course_name'].count('体育') < 1 and score['course_attribute'].count('任选') < 1:
+            grade_point += float(score['credit'])
+            grade += grade_to_num(score['score']) * float(score['credit'])
 
     semester_list[semester_flag] = round((grade / grade_point), 2)
 
@@ -151,13 +159,27 @@ def grade_point_average(username, password):
         value_list.append(value)
     value_list = check_exist(value_list)
     semester_list['all'] = round((temp_grade / temp_semester), 2)
+    sql_update(username, semester_list, value_list)
+
+    temp_list = []
+    for key, value in semester_list.items():
+        temp_list.append({'year': key, 'point': value})
+
+    return temp_list
+
+
+def sql_update(username, semester_list, value_list):
+    result = GradePoint.query.filter(GradePoint.uid == username).first()
+    if result:
+        db.session.delete(result)
+        db.session.commit()
+
     grade_point_temp = GradePoint(uid=username, average=semester_list['all'],
                                   semester1=value_list[0], semester2=value_list[1],
                                   semester3=value_list[2], semester4=value_list[3],
                                   semester5=value_list[4], semester6=value_list[5],
                                   semester7=value_list[6], semester8=value_list[7])
     put_to_mysql(grade_point_temp)
-    return semester_list
 
 
 if __name__ == '__main__':

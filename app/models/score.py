@@ -16,35 +16,45 @@ class Score(db.Model):
     # 学号
     uid = Column(String(32), primary_key=True)
     # 学期
-    semester = Column(String(32), nullable=False)
+    start_semester = Column(String(32), nullable=False)
     # 课名
-    class_name = Column(String(32), nullable=False)
+    course_name = Column(String(32), nullable=False)
     # 成绩
-    grade = Column(String(32), nullable=False)
+    score = Column(String(32), nullable=False)
     # 学分
-    grade_point = Column(String(32), nullable=False)
+    credit = Column(String(32), nullable=False)
     # 考试类型
-    class_test_type = Column(String(32), nullable=False)
+    examination_method = Column(String(32), nullable=False)
     # 课程类型
-    class_type = Column(String(32), nullable=False)
+    course_attribute = Column(String(32), nullable=False)
+    alternative_course_number = Column(String(32), nullable=False)
+    alternative_course_name = Column(String(32), nullable=False)
+    mark_of_score = Column(String(32), nullable=False)
 
-    def __init__(self, uid, semester, class_name, grade,
-                 grade_point, class_test_type, class_type):
+    def __init__(self, uid, start_semester, course_name, score,
+                 credit, examination_method, course_attribute,
+                 alternative_course_number, alternative_course_name, mark_of_score):
         self.uid = uid
-        self.semester = semester
-        self.class_name = class_name
-        self.grade = grade
-        self.grade_point = grade_point
-        self.class_test_type = class_test_type
-        self.class_type = class_type
+        self.start_semester = start_semester
+        self.course_name = course_name
+        self.score = score
+        self.credit = credit
+        self.examination_method = examination_method
+        self.course_attribute = course_attribute
+        self.alternative_course_number = alternative_course_number
+        self.alternative_course_name = alternative_course_name
+        self.mark_of_score = mark_of_score
 
     def serialize(self):
         return {
             'uid': self.uid,
-            'semester': self.semester,
-            'class_name': self.class_name,
-            'grade': self.grade,
-            'grade_point': self.grade_point,
-            'class_test_type': self.class_test_type,
-            'class_type': self.class_type
+            'start_semester': self.start_semester,
+            'course_name': self.course_name,
+            'score': self.score,
+            'credit': self.credit,
+            'examination_method': self.examination_method,
+            'course_attribute': self.course_attribute,
+            'alternative_course_number': self.alternative_course_number,
+            'alternative_course_name': self.alternative_course_name,
+            'mark_of_score': self.mark_of_score
         }

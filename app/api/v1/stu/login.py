@@ -25,10 +25,10 @@ def stu_login():
 
     result = {}
     if re.findall(reg, response.text):
-        result['status'] = 500
+        result['code'] = 500
         result['msg'] = '账户或密码错误'
     else:
-        result['status'] = 200
+        result['code'] = 200
         result['msg'] = '登陆成功'
 
     return json.dumps(result)

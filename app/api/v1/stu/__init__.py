@@ -12,7 +12,7 @@ from flask import Blueprint
 stu = Blueprint('stu', __name__)
 
 from app.api.v1.stu import login, class_schedule, grade_point, \
-    empty_classroom, sports, student_info, teacher_class
+    empty_classroom, sports, student_info, teacher_class, school_calendar,school_news
 
 
 # 学生接口

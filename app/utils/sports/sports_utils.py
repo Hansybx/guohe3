@@ -115,14 +115,14 @@ def tr_in_trs(trs):
         # 备注
         more = tr.contents[3].text
         data_list.append({
-            'num': num,
+            'number': num,
             'date': date,
             'time': time,
             'more': more
         })
     temp = trs[-1].select('td')
     more = temp[0].contents[0]
-    data_list.append({'more': more[:-2]})
+    data_list.append({'total': more[:-2]})
     return data_list
 
 

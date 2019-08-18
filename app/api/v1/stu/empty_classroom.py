@@ -24,25 +24,23 @@ def empty_classroom_get():
 
     try:
         result = empty_classroom(username, password, semester, area_id, building_id, week)
-        status = 200
+        code = 200
         msg = '查询成功'
-        info = {
-            'result': result
-        }
+        info = result
 
     except PasswordFailed:
-        status = 401
+        code = 401
         msg = '查询失败'
         info = {
             'result': '账号或密码错误'
         }
 
     except Exception:
-        status = 500
+        code = 500
         msg = '查询失败'
         info = {
             'result': '未知异常'
         }
 
-    res_json = Res(status, msg, info)
+    res_json = Res(code, msg, info)
     return jsonify(res_json.__dict__)
