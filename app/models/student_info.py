@@ -49,3 +49,15 @@ class StudentInfo(db.Model):
         self.sex = sex
         # self.create_time = get_date_now()
         self.updated_time = get_date_now()
+
+    def serialize(self):
+        return {
+            'name': self.name,
+            'birthday': self.birthday,
+            'major': self.major,
+            'academy': self.academy,
+            'classNum': self.class_num,
+            'identity_card_number': self.identity_card_number,
+            'sex': self.sex
+
+        }

@@ -18,10 +18,9 @@ def get_class_schedule():
     username = request.form['username']
     password = request.form['password']
     semester = request.form['semester']
-    result = {}
     try:
-        for zc in range(1, 21):
-            result[semester + '_' + str(zc)] = get_class_schedule_week(username, password, semester, zc)
+
+        result = get_class_schedule_week(username, password, semester)
 
         code = 200
         msg = '查询成功'
@@ -58,11 +57,9 @@ def get_class_schedule_update():
     username = request.form['username']
     password = request.form['password']
     semester = request.form['semester']
-    result = {}
+    update = request.form['update']
     try:
-        for zc in range(1, 21):
-            result[semester + '_' + str(zc)] = get_class_schedule_week_update(username, password, semester, zc)
-
+        result = get_class_schedule_week_update(username, password, semester,update)
         code = 200
         msg = '查询成功'
         info = result
@@ -81,12 +78,12 @@ def get_class_schedule_update():
             'result': '账号或密码错误'
         }
 
-    except Exception:
-        code = 500
-        msg = '查询失败'
-        info = {
-            'result': '未知异常'
-        }
+    # except Exception:
+    #     code = 500
+    #     msg = '查询失败'
+    #     info = {
+    #         'result': '未知异常'
+    #     }
 
     res_json = Res(code, msg, info)
 

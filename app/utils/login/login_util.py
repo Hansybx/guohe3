@@ -10,6 +10,7 @@ import re
 
 import requests
 from bs4 import BeautifulSoup
+from flask import jsonify
 
 from app.models.error import PasswordFailed
 from app.models.student_info import StudentInfo
@@ -44,7 +45,14 @@ def student_info(username, password):
     response = session.get('http://jwgl.just.edu.cn:8080/jsxsd/grxx/xsxx?Ves632DSdyV=NEW_XSD_XJCJ')
     if re.findall(reg, response.text):
         raise PasswordFailed
+    info = query_in_mysql(username)
+    if info:
+        return info
+    else:
+        return student_info_get(username, password, response)
 
+
+def student_info_get(username, password, response):
     info = {}
     soup = BeautifulSoup(response.text, "html.parser")
     trs = soup.select('#xjkpTable tr')
@@ -53,8 +61,8 @@ def student_info(username, password):
     info['academy'] = academy
     major = trs[2].contents[3].contents[0][3:]
     info['major'] = major
-    class_num = trs[2].contents[7].contents[0][3:]
-    info['class_num'] = class_num
+    classNum = trs[2].contents[7].contents[0][3:]
+    info['classNum'] = classNum
 
     name = trs[3].contents[3].text
     info['name'] = name
@@ -66,10 +74,16 @@ def student_info(username, password):
     info['identity_card_number'] = identity_card_number
 
     student = StudentInfo(username, password, name, birthday, major, academy,
-                          class_num, identity_card_number, sex)
+                          classNum, identity_card_number, sex)
     put_to_mysql(student)
 
     return info
+
+
+def query_in_mysql(username):
+    data = StudentInfo.query.filter(StudentInfo.uid == username)
+    if data:
+        return jsonify(data=[i.serialize() for i in data]).json['data']
 
 
 if __name__ == '__main__':

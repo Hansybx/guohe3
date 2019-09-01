@@ -41,7 +41,9 @@ def html_get(username, password, url):
 
     response.encoding = 'gb2312'
     soup = BeautifulSoup(response.text, 'html.parser')
-
+    temp = soup.select('body p p p')
+    if '第 32 行发生错误 现在不允许操作用户界面' in str(temp[0].contents[0]):
+        raise Exception
     trs = soup.select('form tr')
 
     if len(trs) > 0:
