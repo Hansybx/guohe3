@@ -16,45 +16,45 @@ class Score(db.Model):
     # 学号
     uid = Column(String(32), primary_key=True)
     # 学期
-    start_semester = Column(String(32), nullable=False)
+    startSemester = Column(String(32), nullable=False)
     # 课名
-    course_name = Column(String(32), nullable=False)
+    courseName = Column(String(32), nullable=False)
     # 成绩
     score = Column(String(32), nullable=False)
     # 学分
     credit = Column(String(32), nullable=False)
     # 考试类型
-    examination_method = Column(String(32), nullable=False)
+    examinationMethod = Column(String(32), nullable=False)
     # 课程类型
-    course_attribute = Column(String(32), nullable=False)
-    alternative_course_number = Column(String(32), nullable=False)
-    alternative_course_name = Column(String(32), nullable=False)
-    mark_of_score = Column(String(32), nullable=False)
+    courseAttribute = Column(String(32), nullable=False)
+    alternativeCourseNumber = Column(String(32), nullable=False)
+    alternativeCourseName = Column(String(32), nullable=False)
+    markOfScore = Column(String(32), nullable=False)
 
-    def __init__(self, uid, start_semester, course_name, score,
-                 credit, examination_method, course_attribute,
-                 alternative_course_number, alternative_course_name, mark_of_score):
+    def __init__(self, uid, startSemester, courseName, score,
+                 credit, examinationMethod, courseAttribute,
+                 alternativeCourseNumber, alternativeCourseName, markOfScore):
         self.uid = uid
-        self.start_semester = start_semester
-        self.course_name = course_name
+        self.startSemester = startSemester
+        self.courseName = courseName
         self.score = score
         self.credit = credit
-        self.examination_method = examination_method
-        self.course_attribute = course_attribute
-        self.alternative_course_number = alternative_course_number
-        self.alternative_course_name = alternative_course_name
-        self.mark_of_score = mark_of_score
+        self.examinationMethod = examinationMethod
+        self.courseAttribute = courseAttribute
+        self.alternativeCourseNumber = alternativeCourseNumber
+        self.alternativeCourseName = alternativeCourseName
+        self.markOfScore = markOfScore
 
     def serialize(self):
         return {
             'uid': self.uid,
-            'start_semester': self.start_semester,
-            'course_name': self.course_name,
+            'startSemester': self.startSemester,
+            'courseName': self.courseName,
             'score': self.score,
             'credit': self.credit,
-            'examination_method': self.examination_method,
-            'course_attribute': self.course_attribute,
-            'alternative_course_number': self.alternative_course_number,
-            'alternative_course_name': self.alternative_course_name,
-            'mark_of_score': self.mark_of_score
+            'examinationMethod': self.examinationMethod,
+            'courseAttribute': self.courseAttribute,
+            'alternativeCourseNumber': self.alternativeCourseNumber,
+            'alternativeCourseName': self.alternativeCourseName,
+            'markOfScore': self.markOfScore
         }

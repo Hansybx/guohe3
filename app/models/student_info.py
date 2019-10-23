@@ -58,6 +58,7 @@ class StudentInfo(db.Model):
             'academy': self.academy,
             'classNum': self.class_num,
             'identity_card_number': self.identity_card_number,
-            'sex': self.sex
-
+            'sex': self.sex,
+            'username': self.uid
+            #   'password':self.password
         }
