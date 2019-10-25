@@ -20,6 +20,7 @@ def get_school_calendar(username, password):
     last_week = lastweek_get(begin_year)
 
     temp = datetime.datetime.now().isocalendar()
+    now_year = temp[0]
     now_week = temp[1]
     now_day = temp[2]
     result['week'] = to_weekday(now_day)
@@ -28,21 +29,22 @@ def get_school_calendar(username, password):
     all_year = []
     start = int('20' + username[0:2])
     end = int(begin_year)
+    if begin_week > 32:
+        all_year.append(str(end) + '-' + str(end + 1) + '-1')
     while start < end:
-        all_year.append(str(start) + '-' + str(start + 1) + '-1')
         all_year.append(str(start) + '-' + str(start + 1) + '-2')
+        all_year.append(str(start) + '-' + str(start + 1) + '-1')
         start += 1
-    all_year.append(str(start) + '-' + str(start + 1) + '-1')
-    result['all_year'] = all_year
+    result['allYear'] = all_year
 
-    if end_year > begin_year:
+    if now_year > begin_year:
         current_week = last_week - begin_week + 1 + now_week
 
     else:
         current_week = now_week - begin_week + 1
 
-    if current_week > 20:
-        current_week = 20
+    if current_week > 25:
+        current_week = 25
     result['weekNum'] = current_week
 
     return result
@@ -95,5 +97,4 @@ def to_weekday(tab):
     return currentTab
 
 
-if __name__ == '__main__':
-    get_xiaoli('168888', '2')
+# if __name__ == '__main__':

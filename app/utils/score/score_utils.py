@@ -34,20 +34,21 @@ def get_score(username, password):
         # 未评价
         raise AuthFailed
 
-    score_list = query_in_sql(username)
-    if score_list:
-        return score_list.json['data']
-    else:
-        score_list = []
-        for tr in trs:
-            score_list.append(get_tr_in_trs(tr, username))
+    score_list = []
+    for tr in trs:
+        score_list.append(get_tr_in_trs(tr, username))
 
-        sql = "insert into score(uid, start_semester, course_name, score,credit," \
-              " examination_method, course_attribute,alternative_course_number," \
-              " alternative_course_name, mark_of_score)" \
-              "values (:uid, :start_semester, :course_name, :score,:credit," \
-              " :examination_method, :course_attribute,:alternative_course_number," \
-              " :alternative_course_name, :mark_of_score)"
+    temp = query_in_sql(username)
+    if temp:
+        if len(temp.json['data']) >= len(score_list):
+            return temp.json['data']
+    else:
+        sql = "insert into score(uid, startSemester, courseName, score,credit," \
+              " examinationMethod, courseAttribute,alternativeCourseNumber," \
+              " alternativeCourseName, markOfScore)" \
+              "values (:uid, :startSemester, :courseName, :score,:credit," \
+              " :examinationMethod, :courseAttribute,:alternativeCourseNumber," \
+              " :alternativeCourseName, :markOfScore)"
         sql_to_execute(sql, score_list)
         return score_list
 
@@ -62,30 +63,30 @@ def query_in_sql(username):
 
 def get_tr_in_trs(tr, username):
     score_info = {'uid': username,
-                  'start_semester': '',
-                  'course_name': '',
+                  'startSemester': '',
+                  'courseName': '',
                   'score': '',
                   'credit': '',
-                  'examination_method': '',
-                  'course_attribute': '',
-                  'alternative_course_number': '',
-                  'alternative_course_name': '',
-                  'mark_of_score': ''}
+                  'examinationMethod': '',
+                  'courseAttribute': '',
+                  'alternativeCourseNumber': '',
+                  'alternativeCourseName': '',
+                  'markOfScore': ''}
     # 学期
-    score_info['start_semester'] = tr.contents[3].text
+    score_info['startSemester'] = tr.contents[3].text
     # 课程名
-    score_info['course_name'] = tr.contents[7].text
+    score_info['courseName'] = tr.contents[7].text
     # 课程得分
     score_info['score'] = tr.contents[9].text
     # 学分
     score_info['credit'] = tr.contents[11].text
     # 考试类型
-    score_info['examination_method'] = tr.contents[15].text
+    score_info['examinationMethod'] = tr.contents[15].text
     # 课程类型
-    score_info['course_attribute'] = tr.contents[17].text
-    score_info['alternative_course_number'] = tr.contents[21].text
-    score_info['alternative_course_name'] = tr.contents[23].text
-    score_info['mark_of_score'] = tr.contents[25].text
+    score_info['courseAttribute'] = tr.contents[17].text
+    score_info['alternativeCourseNumber'] = tr.contents[21].text
+    score_info['alternativeCourseName'] = tr.contents[23].text
+    score_info['markOfScore'] = tr.contents[25].text
     return score_info
 
 
@@ -127,21 +128,21 @@ def grade_point_average(username, password):
     filter_flag = ''
 
     score_list = get_score(username, password)
-    semester_flag = score_list[0]['start_semester']
+    semester_flag = score_list[0]['startSemester']
     for score in score_list:
         # 重修补考成绩在前，筛选
-        if score['course_name'] == filter_flag:
+        if score['courseName'] == filter_flag:
             continue
-        filter_flag = score['course_name']
+        filter_flag = score['courseName']
 
         # 当前学期绩点判断
-        if semester_flag != score['start_semester']:
+        if semester_flag != score['startSemester']:
             semester_list[semester_flag] = round((grade / grade_point), 2)
-            semester_flag = score['start_semester']
+            semester_flag = score['startSemester']
             grade_point = 0
             grade = 0
 
-        if score['course_name'].count('体育') < 1 and score['course_attribute'].count('任选') < 1:
+        if score['courseName'].count('体育') < 1 and score['courseAttribute'].count('任选') < 1:
             grade_point += float(score['credit'])
             grade += grade_to_num(score['score']) * float(score['credit'])
 
