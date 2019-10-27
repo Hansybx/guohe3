@@ -57,9 +57,9 @@ def get_class_schedule_update():
     username = request.form['username']
     password = request.form['password']
     semester = request.form['semester']
-    update = request.form['update']
+    update = True
     try:
-        result = get_class_schedule_week_update(username, password, semester,update)
+        result = get_class_schedule_week_update(username, password, semester, update)
         code = 200
         msg = '查询成功'
         info = result
