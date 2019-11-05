@@ -30,8 +30,9 @@ def sports_login(username, password):
         'username': username,
         'password': password
     }
-    session.post('http://tyxy.just.edu.cn/index1.asp', headers=headers,
-                 data=sport_data, verify=False)
+    temp = session.post('http://tyxy.just.edu.cn/index1.asp', headers=headers,
+                        data=sport_data, verify=False)
+    print(temp)
     return session
 
 
@@ -41,8 +42,8 @@ def html_get(username, password, url):
 
     response.encoding = 'gb2312'
     soup = BeautifulSoup(response.text, 'html.parser')
-    temp = soup.select('body p p p')
-    if '第 32 行发生错误 现在不允许操作用户界面' in str(temp[0].contents[0]):
+    temp = soup.select('body p p p ')
+    if len(temp) > 0 and '第 32 行发生错误 现在不允许操作用户界面' in str(temp[0].contents[0]):
         raise Exception
     trs = soup.select('form tr')
 
@@ -68,7 +69,7 @@ def html_get_score(username, password, url):
 def tr_in_trs_score(trs, username):
     data_list = []
 
-    for i in range(int(len(trs)//7)):
+    for i in range(int(len(trs) // 7)):
         semester = trs[0 + i * 7].text
         class_name = trs[1 + i * 7].text
         time = trs[2 + i * 7].text
@@ -84,7 +85,7 @@ def tr_in_trs_score(trs, username):
             'class_order': class_order,
             'grade': grade
         })
-        score_temp = PEScore(uid=username, semester=semester, class_name=class_name,time=time,
+        score_temp = PEScore(uid=username, semester=semester, class_name=class_name, time=time,
                              teacher=teacher, class_order=class_order, grade=grade)
         put_to_mysql(score_temp)
 
@@ -97,6 +98,8 @@ def query_in_sql(username):
         return jsonify(data=[i.serialize() for i in data])
     else:
         return None
+
+
 # semester
 # class_name
 # teacher
@@ -177,7 +180,7 @@ def sports_score(username, password):
 
 
 if __name__ == '__main__':
-    # morning_attend('182210101312', 'GY')
+    sports_login('182210101312', 'GY')
     # club_attend('172211802117', 'ZQQ')
     # club_attend('17221117', 'ZQQ')
-    sports_score('172211802117', 'ZQQ')
+    # sports_score('172211802117', 'ZQQ')

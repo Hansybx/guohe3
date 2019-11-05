@@ -23,7 +23,8 @@ def get_school_calendar(username, password):
     now_year = temp[0]
     now_week = temp[1]
     now_day = temp[2]
-    result['week'] = to_weekday(now_day)
+    result['weekDay'] = to_weekday(now_day)
+    result['weekDayNum'] = now_day
     result['today'] = datetime.date.today().isoformat()
 
     all_year = []
@@ -97,4 +98,5 @@ def to_weekday(tab):
     return currentTab
 
 
-# if __name__ == '__main__':
+if __name__ == '__main__':
+    get_school_calendar('1','1')

@@ -21,9 +21,8 @@ def morning_attend_get():
         result = morning_attend(username, password)
         code = 200
         msg = '查询成功'
-        info = {
-            'result': result
-        }
+        info = result
+
 
     except PasswordFailed:
         code = 401
