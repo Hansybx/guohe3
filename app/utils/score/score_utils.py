@@ -122,12 +122,16 @@ def check_exist(temp):
 
 # 绩点课程筛选
 def grade_point_average(username, password):
+    score_list = get_score(username, password)
+    gpa_calculate(score_list,username)
+
+
+def gpa_calculate(score_list,username):
     grade_point = 0
     grade = 0
     semester_list = {}
     filter_flag = ''
 
-    score_list = get_score(username, password)
     semester_flag = score_list[0]['startSemester']
     for score in score_list:
         # 重修补考成绩在前，筛选
