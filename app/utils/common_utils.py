@@ -48,14 +48,20 @@ def get_ran_dom():
 
 # 添加到数据库
 def put_to_mysql(key):
-    db.session.add(key)
-    db.session.commit()
+    try:
+        db.session.add(key)
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
 
 
 # 数据批量保存
 def sql_to_execute(sql, value):
-    db.session.execute(sql, value)
-    db.session.commit()
+    try:
+        db.session.execute(sql, value)
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
 
 
 if __name__ == '__main__':

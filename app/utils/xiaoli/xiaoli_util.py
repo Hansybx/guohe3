@@ -6,18 +6,21 @@ Author  : Hansybx
 
 """
 import datetime
+import re
 
 import requests
 from bs4 import BeautifulSoup
 
+from app.models.error import PasswordFailed
+from app.utils.login.login_util import login
 
-def get_school_calendar(username, password):
+
+def get_calendar(username, password):
     result = {}
-    begintime, endtime = time_get()
-
-    begin_year, begin_week = str_to_time(begintime)
-    end_year, end_week = str_to_time(endtime)
-    last_week = lastweek_get(begin_year)
+    start_day, end_day = time_get(username, password)
+    begin_year, begin_week = str2time(start_day)
+    end_year, end_week = str2time(end_day)
+    last_week = last_week_get(begin_year)
 
     temp = datetime.datetime.now().isocalendar()
     now_year = temp[0]
@@ -30,12 +33,14 @@ def get_school_calendar(username, password):
     all_year = []
     start = int('20' + username[0:2])
     end = int(begin_year)
+
     if begin_week > 32:
         all_year.append(str(end) + '-' + str(end + 1) + '-1')
+
     while start < end:
-        all_year.append(str(start) + '-' + str(start + 1) + '-2')
-        all_year.append(str(start) + '-' + str(start + 1) + '-1')
-        start += 1
+        all_year.append(str(end - 1) + '-' + str(end) + '-2')
+        all_year.append(str(end - 1) + '-' + str(end) + '-1')
+        end -= 1
     result['allYear'] = all_year
 
     if now_year > begin_year:
@@ -44,31 +49,31 @@ def get_school_calendar(username, password):
     else:
         current_week = now_week - begin_week + 1
 
-    if current_week > 25:
-        current_week = 25
+    if current_week > 20:
+        current_week = 20
     result['weekNum'] = current_week
-
     return result
 
 
-def time_get():
-    response = requests.get('http://jwc.just.edu.cn/')
-    response.encoding = 'utf-8'
+def time_get(username, password):
+    reg = r'<font color="red">请先登录系统</font>'
+    session = login(username, password)
+    response = session.get('http://jwgl.just.edu.cn:8080/jsxsd/jxzl/jxzl_query?Ves632DSdyV=NEW_XSD_WDZM')
+    if re.findall(reg, response.text):
+        raise PasswordFailed
     soup = BeautifulSoup(response.text, "html.parser")
-    element = soup.find('div', id='teachWeekly')
-    begintime = element['begintime']
-    endtime = element['endtime']
-    return begintime, endtime
+    b = soup.find_all('td', title=True)
+    start_day = b[0]['title']
+    end_day = b[-1]['title']
+    return start_day, end_day
 
 
-def str_to_time(time_str):
-    year = int(time_str[0:4])
-    month = int(time_str[4:6])
-    day = int(time_str[6:9])
-    return year, datetime.date(year, month, day).isocalendar()[1]
+def str2time(time_str):
+    time_info = re.split('[\u4e00-\u9fa5]', time_str)
+    return int(time_info[0]), datetime.date(int(time_info[0]), int(time_info[1]), int(time_info[2])).isocalendar()[1]
 
 
-def lastweek_get(year):
+def last_week_get(year):
     day = 31
     month = 12
     week = datetime.date(year, month, day).isocalendar()[1]
@@ -79,24 +84,25 @@ def lastweek_get(year):
 
 
 def to_weekday(tab):
-    currentTab = ''
+    current_tab = ''
     if tab == 1:
-        currentTab = '星期一'
+        current_tab = '星期一'
     if tab == 2:
-        currentTab = '星期二'
+        current_tab = '星期二'
     if tab == 3:
-        currentTab = '星期三'
+        current_tab = '星期三'
     if tab == 4:
-        currentTab = '星期四'
+        current_tab = '星期四'
     if tab == 5:
-        currentTab = '星期五'
+        current_tab = '星期五'
     if tab == 6:
-        currentTab = '星期六'
+        current_tab = '星期六'
     if tab == 7:
-        currentTab = '星期日'
+        current_tab = '星期日'
 
-    return currentTab
+    return current_tab
 
 
 if __name__ == '__main__':
-    get_school_calendar('1','1')
+    a = get_calendar('182210711114', 'hanzy2000')
+    print(a)
