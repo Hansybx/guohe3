@@ -25,9 +25,13 @@ def create_app():
 def register_blueprint(app):
     from app.api.v1 import v1
     from app.api.v1.stu import stu
+    from app.api.v1.mobile import mobile
+    from app.api.v1.xsbook import xsbook
 
     app.register_blueprint(v1, url_prefix='/api/v1')
     app.register_blueprint(stu, url_prefix='/api/v1/stu')
+    app.register_blueprint(mobile, url_prefix='/api/v1/mobile')
+    app.register_blueprint(xsbook, url_prefix='/api/v1/xsbook')
 
 
 def init_db(app):

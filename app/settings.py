@@ -7,3 +7,4 @@ Author  : Hansybx
 """
 
 DEBUG = True
+BASE_URL = 'https://stu.guohe3.cn/'

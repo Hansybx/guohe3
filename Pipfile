@@ -9,6 +9,13 @@ verify_ssl = true
 flasksqlalchemy = "*"
 flask-sqlalchemy = "*"
 request = "*"
+flask = "*"
+requests = "*"
+bs4 = "*"
+pymsql = "*"
+pymysql = "*"
+gunicorn = "*"
+flask-mail = "*"
 
 [requires]
 python_version = "3.7"

@@ -5,16 +5,18 @@ Time    : 2019/7/21 14:10
 Author  : Hansybx
 
 """
-from sqlalchemy import Column, Integer, String
+from pymysql import Date
+from sqlalchemy import Column, Integer, String, DateTime
 
 from app import db
 from app.utils.common_utils import md5, get_date_now
 
 
 class StudentInfo(db.Model):
-    __tablename__ = 'StudentInfo'
+    __bind_key__ = 'guohe'
+    __tablename__ = 'student_info'
     # 学号
-    uid = Column(Integer, primary_key=True)
+    uid = Column(String(32), primary_key=True)
     # 密码
     password = Column(String(100), nullable=False)
     # 姓名
@@ -34,7 +36,7 @@ class StudentInfo(db.Model):
     # 创建日期
     # create_time = Column(String(100), nullable=False)
     # 更新日期
-    updated_time = Column(String(100), nullable=False)
+    updated_time = Column(String(50), nullable=False)
 
     def __init__(self, uid, password, name, birthday, major, academy,
                  class_num, identity_card_num, sex):
@@ -49,3 +51,16 @@ class StudentInfo(db.Model):
         self.sex = sex
         # self.create_time = get_date_now()
         self.updated_time = get_date_now()
+
+    def serialize(self):
+        return {
+            'name': self.name,
+            'birthday': self.birthday,
+            'major': self.major,
+            'academy': self.academy,
+            'classNum': self.class_num,
+            'identity_card_number': self.identity_card_number,
+            'sex': self.sex,
+            'username': self.uid
+            #   'password':self.password
+        }

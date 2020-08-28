@@ -12,7 +12,8 @@ from app import db
 
 
 class GradePoint(db.Model):
-    __tablename__ = 'GradePoint'
+    __bind_key__ = 'guohe'
+    __tablename__ = 'gpa'
     # 学号
     uid = Column(String(32), primary_key=True)
     semester1 = Column(String(32), nullable=True)

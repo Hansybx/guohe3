@@ -12,3 +12,5 @@ from flask import Blueprint
 v1 = Blueprint('v1', __name__)
 
 from app.api.v1.stu import stu
+from app.api.v1.mobile import mobile
+from app.api.v1.xsbook import xsbook
